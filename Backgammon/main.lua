@@ -3,10 +3,11 @@
 
 
 function love.load()
-  draw = true
   numOfPieces = nil
   pieceType = nil
   pieceLocation = nil
+
+  pieceFollow = true
 
   -- Creating piece storage
   pieces = {{{2,1, 391}, {0,"", 546}, {0,"", 701}, {0,"", 856}, {0,"", 1011}, {5,2, 1166}, {0,"", 1633}, {3,2, 1788}, {0,"", 1943}, {0,"", 2098}, {0,"", 2253}, {5,1, 2408}},
@@ -20,18 +21,17 @@ function love.load()
 end
 
 function drawPieces()
-  print("Drawing pieces")
   for i = 1, #pieces do
     for j = 1, #pieces[i] do
           -- Setting how many pieces are in the location
           numOfPieces = pieces[i][j][1]
-          print("Number of pieces: "..numOfPieces)
+          -- print("Number of pieces: "..numOfPieces)
           -- Setting the type of piece
           pieceType = pieces[i][j][2]
-          print("Type of piece: "..pieceType)
+          -- print("Type of piece: "..pieceType)
           -- Setting the location of the piece
           pieceLocation = pieces[i][j][3]
-          print("Location of piece: "..pieceLocation)
+          -- print("Location of piece: "..pieceLocation)
 
         if numOfPieces > 0 then
           if i == 1 then
@@ -60,6 +60,54 @@ function drawPieces()
   end
 end
 
+function love.mousepressed()
+  startX = nil
+  startY = nil
+  if mouseCoordsX > 0 and mouseCoordsY > 0 then
+    startX = mouseCoordsX
+    startY = mouseCoordsY
+    print(startX..", "..startY)
+    pieceFollow = true
+    currentPieceType = pieces[startY][startX][2]
+  end
+  
+end
+
+function love.mousereleased()
+  endX = 0
+  endY = 0
+  if startX ~= nil and startY ~= nil and mouseCoordsX ~= 0 then
+    endX = mouseCoordsX
+    endY = mouseCoordsY
+    print(endX..", "..endY)
+  end
+  if endX ~= nil and endY ~= nil and startY~= nil and startX ~= nil then
+    if pieces[startY] and pieces[startY][startX] and pieces[endY] and pieces[endY][endX] then
+      if pieces[startY][startX][1] > 0 then
+        pieces[endY][endX][1] = pieces[endY][endX][1] + 1
+        pieces[endY][endX][2] = pieces[startY][startX][2]
+        pieces[startY][startX][1] = pieces[startY][startX][1] - 1
+        print("bruh")
+      end
+    end
+  end
+  pieceFollow = false
+end
+
+function pieceFollowMouse()
+  love.graphics.setColor(1, 1, 1)
+  if pieceFollow then
+    -- print("mouse Down")
+    if startX ~= nil and startY ~= nil then
+      if currentPieceType == 1 then
+        love.graphics.draw(whitePiece, mouseX - 148 / 2, mouseY - 148 / 2)
+      elseif currentPieceType == 2 then
+        love.graphics.draw(blackPiece, mouseX - 148 / 2, mouseY - 148 / 2)
+      end
+    end
+  end
+end
+
 function love.update(dt)
   mouseX = love.mouse.getX()
   mouseY = love.mouse.getY()
@@ -78,15 +126,12 @@ function love.update(dt)
 end
 
 function love.draw()
-  -- if draw then
   love.graphics.setColor(1, 1, 1)
   love.graphics.draw(background, 0, 0)
-  -- love.graphics.draw(whitePiece, 1000, 1000)
-  -- love.graphics.draw(blackPiece, 1200, 1244)
   drawPieces()
   love.graphics.setColor(0, 0, 1)
   love.graphics.print(love.mouse.getX()..", "..love.mouse.getY(), 1000, 1000)
   love.graphics.print(mouseCoordsX..", "..mouseCoordsY, 1000, 1100)
-  draw = false
-  -- end
+
+  pieceFollowMouse()
 end

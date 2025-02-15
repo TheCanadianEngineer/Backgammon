@@ -4,6 +4,12 @@
     "mouseCoordsY",
     "mouseX",
     "mouseY",
-    "mouseCoordsX"
+    "mouseCoordsX",
+    "startX",
+    "startY",
+    "endX",
+    "endY",
+    "pieceFollow",
+    "currentPieceType"
   ]
 }
